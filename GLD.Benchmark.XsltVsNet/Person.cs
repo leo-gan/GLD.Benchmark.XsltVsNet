@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace GLD.Benchmark.XsltVsNet
 {
@@ -25,14 +26,15 @@ namespace GLD.Benchmark.XsltVsNet
     {
         public int Id { get; set; }
         public string CrimeCode { get; set; }
+        public string Description { get; set; }
     }
 
     [Serializable]
     public class Person
     {
-        // private static int maxPoliceRecordCounter = 20;
+       public Person() :this(10) {}
 
-        public Person()
+        public Person(int numberOfPoliceRecords)
         {
             FirstName = Randomizer.Name;
             LastName = Randomizer.Name;
@@ -45,13 +47,13 @@ namespace GLD.Benchmark.XsltVsNet
                     Randomizer.GetDate(DateTime.UtcNow, DateTime.UtcNow + TimeSpan.FromDays(1000)),
                 Number = Randomizer.Id
             };
-            var curPoliceRecordCounter = Randomizer.Rand.Next(20);
-            PoliceRecords = new PoliceRecord[curPoliceRecordCounter];
-            for (var i = 0; i < curPoliceRecordCounter; i++)
+            PoliceRecords = new PoliceRecord[numberOfPoliceRecords];
+            for (var i = 0; i < numberOfPoliceRecords; i++)
                 PoliceRecords[i] = new PoliceRecord
                 {
                     Id = int.Parse(Randomizer.Id),
-                    CrimeCode = Randomizer.Name
+                    CrimeCode = Randomizer.Name,
+                    Description = Randomizer.Phrase,
                 };
         }
 
@@ -65,8 +67,6 @@ namespace GLD.Benchmark.XsltVsNet
 
         public Passport Passport { get; set; }
 
-        // OverwriteList happens to be very important in this case, where constructor generates this array!
-        // IsRequired is important!
         public PoliceRecord[] PoliceRecords { get; set; }
 
         public List<string> Compare(Person comparable)
@@ -112,6 +112,16 @@ namespace GLD.Benchmark.XsltVsNet
         {
             if (!left.Equals(right))
                 errors.Add(String.Format("\t{0}: {1} != {2}", objectName, left, right));
+        }
+
+        public string GetXmlString()
+        {
+            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(Person));
+            using (var sw = new StringWriter())
+            {
+                serializer.Serialize(sw, (Person)this);
+                return sw.ToString();
+            }
         }
     }
 }

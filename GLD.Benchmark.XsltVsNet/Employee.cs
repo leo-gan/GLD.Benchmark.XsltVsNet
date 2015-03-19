@@ -16,7 +16,6 @@ namespace GLD.Benchmark.XsltVsNet
     [Serializable]
     public class Employee
     {
-        // private static int maxHistoryRecordCounter = 20;
 
         public Employee()
         {
@@ -78,7 +77,7 @@ namespace GLD.Benchmark.XsltVsNet
             Compare("FirstName", FirstName, comparable.FirstName, errors);
 
             var originalHistoryRecords = HistoryRecords;
-            var comparableHistoryRecords = comparable.HistoryRecords;
+            var comparableHistoryRecords = comparable.PoliceRecords;
             Compare("HistoryRecords.Length", originalHistoryRecords.Length,
                 comparableHistoryRecords.Length, errors);
 

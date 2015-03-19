@@ -5,59 +5,56 @@ using System.Linq;
 
 namespace GLD.Benchmark.XsltVsNet
 {
-    internal struct Measurements
-    {
-        public string OperationName;
-        public long[] Times;
+    //internal struct Measurements
+    //{
+    //    public string OperationName;
+    //    public long[] Times;
 
-        public Measurements(string operationName, int repetitions)
-        {
-            OperationName = operationName;
-            Times = new long[repetitions];
-        }
-    }
+    //    public Measurements(string operationName, int repetitions)
+    //    {
+    //        OperationName = operationName;
+    //        Times = new long[repetitions];
+    //    }
+    //}
 
     internal class Tester
     {
-        public static void Tests(int repetitions, Dictionary<string, ISerDeser> serializers)
+        public static void Tests(int repetitions, int numberOfPoliceRecords, Dictionary<string, Func<string, string>> operations)
         {
-            var measurements = new Dictionary<string, Measurements[]>();
-            foreach (var serializer in serializers)
-                measurements[serializer.Key] = new Measurements[repetitions];
-            var original = new Person(); // the same data for all serializers
+            var measurements = new Dictionary<string, long[]>();
+            foreach (var operation in operations)
+                measurements[operation.Key] = new long[repetitions];
+            string original = (new Person(numberOfPoliceRecords)).GetXmlString(); // the same data for all operations
             for (int i = 0; i < repetitions; i++)
-                foreach (var serializer in serializers)
+                foreach (var keyValuePair in operations)
                 {
                     var sw = Stopwatch.StartNew();
-                    string serialized = serializer.Value.Serialize<Person>(original);
 
-                    measurements[serializer.Key][i].Size = serialized.Length;
-
-                    var processed = serializer.Value.Deserialize<Person>(serialized);
+                    var processed = keyValuePair.Value(original); // execute operation
 
                     sw.Stop();
-                    measurements[serializer.Key][i].Time = sw.ElapsedTicks;
-                    Trace.WriteLine(serializer.Key + ": " + serialized);
-                    Trace.WriteLine(serializer.Key + ": " + sw.ElapsedTicks);
-                    List<string> errors = original.Compare(processed);
-                    errors[0] = serializer.Key + errors[0];
-                    ReportErrors(errors);
+                    measurements[keyValuePair.Key][i] = sw.ElapsedTicks;
+                    Trace.WriteLine(keyValuePair.Key + ": " + processed);
+                    Trace.WriteLine(keyValuePair.Key + ": " + sw.ElapsedTicks);
+                    //List<string> errors = original.Compare(processed);
+                    //errors[0] = keyValuePair.Key + errors[0];
+                    //ReportErrors(errors);
                 }
             ReportAllResults(measurements);
         }
 
-        private static void ReportAllResults(Dictionary<string, Measurements[]> measurements)
+        private static void ReportAllResults(Dictionary<string, long[]> measurements)
         {
             ReportTestResultHeader();
             foreach (var oneTestMeasurments in measurements)
                 ReportTestResult(oneTestMeasurments);
         }
 
-        private static void ReportTestResult(KeyValuePair<string, Measurements[]> oneTestMeasurements)
+        private static void ReportTestResult(KeyValuePair<string, long[]> oneTestMeasurements)
         {
-            string report = String.Format("{0, -20}  {1,9:N0} {2,11:N0}    {3,7}",
+            string report = String.Format("{0, -20}  {1,9:N0} {2,11:N0}",
                 oneTestMeasurements.Key,
-                AverageTime(oneTestMeasurements.Value), MaxTime(oneTestMeasurements.Value), AverageSize(oneTestMeasurements.Value));
+                AverageTime(oneTestMeasurements.Value), MaxTime(oneTestMeasurements.Value)); // , AverageSize(oneTestMeasurements.Value));
 
             Console.WriteLine(report);
             Trace.WriteLine(report);
@@ -65,8 +62,8 @@ namespace GLD.Benchmark.XsltVsNet
 
         private static void ReportTestResultHeader()
         {
-            string header = "Serializer:          Time: Avg,    Max ticks   Size: Avg\n"
-                            + "========================================================";
+            const string header = "Serializer:          Time: Avg,    Max ticks   \n"
+                                  + "===============================================";
 
             Console.WriteLine(header);
             Trace.WriteLine(header);
@@ -84,22 +81,22 @@ namespace GLD.Benchmark.XsltVsNet
             }
         }
 
-        public static double MaxTime(Measurements[] measurements)
+        public static double MaxTime(long[] measurements)
         {
             if (measurements == null || measurements.Length == 0) return 0;
             var times = new long[measurements.Length];
             for (int i = 0; i < measurements.Length; i++)
-                times[i] = measurements[i].Time;
+                times[i] = measurements[i];
             var max = times.Max();
             return max;
         }
 
-        public static double AverageTime(Measurements[] measurements)
+        public static double AverageTime(long[] measurements)
         {
             if (measurements == null || measurements.Length == 0) return 0;
             var times = new long[measurements.Length];
             for (int i = 0; i < measurements.Length; i++)
-                times[i] = measurements[i].Time;
+                times[i] = measurements[i];
 
             Array.Sort(times);
             int repetitions = times.Length;
@@ -113,14 +110,14 @@ namespace GLD.Benchmark.XsltVsNet
             return ((double)totalTime) / (count - discardCount);
         }
 
-        public static int AverageSize(Measurements[] measurements)
-        {
-            if (measurements == null || measurements.Length == 0) return 0;
-            long totalSizes = 0;
-            for (int i = 0; i < measurements.Length; i++)
-                totalSizes += measurements[i].Size;
+        //public static int AverageSize(long[] measurements)
+        //{
+        //    if (measurements == null || measurements.Length == 0) return 0;
+        //    long totalSizes = 0;
+        //    for (int i = 0; i < measurements.Length; i++)
+        //        totalSizes += measurements[i].Size;
 
-            return (int)(totalSizes / measurements.Length);
-        }
+        //    return (int)(totalSizes / measurements.Length);
+        //}
     }
 }

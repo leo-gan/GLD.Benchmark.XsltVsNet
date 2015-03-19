@@ -10,35 +10,19 @@ namespace GLD.Benchmark.XsltVsNet
     {
         private static void Main(string[] args)
         {
-            // Input:
-            // SerializerName[Json.NET, Bond...] / Format[JSON, XML, Binary, Specific...] / 
-            // Data [int, string, class...] / TestRepetitions
-            // Output: Average time per serialization + deserialization
 
             var repetitions = int.Parse(args[0]);
+            int numberOfPoliceRecords = int.Parse(args[1]);
             Console.WriteLine("Repetitions: " + repetitions);
-            var serializers = new Dictionary<string, ISerDeser>
+            Console.WriteLine("Number of Police Records: " + numberOfPoliceRecords);
+            var serializers = new Dictionary<string, Func<string, string>> 
             {
-                {"Avro", new AvroSerializer(typeof(Person))},
-                {"BinarySerializer",new BinarySerializer()},
-                //{"BondSerializer", new BondSerializer(typeof(Person))}, // TODO: It does not debugged yet. 
-                {"DataContract", new DataContractSerializerSerializer(typeof(Person))},  
-                {"fastJson", new FastJsonSerializer()},  // TODO: DateTime format?
-                {"JavaScriptSerializer", new JavaScriptSerializer()},  // TODO: DateTime format?
-                {"Jil", new JilSerializer()},  // TODO: DateTime format?
-                {"JsonFx", new JsonFxSerializer()},  // TODO: DateTime format?
-                {"JsonNet",new JsonNetSerializer()},
-                {"JsonNetStream",new JsonNetStreamSerializer()},
-                {"MsgPack", new MsgPackSerializer()},  // TODO: DateTime format?
-                {"NetSerializer", new NetSerializerSerializer(typeof(Person))},  
-                {"ProtoBuf", new ProtoBufSerializer()},
-                {"SharpSerializer", new SharpSerializer()},   // TODO: DateTime format?
-                {"ServiceStackJson", new ServiceStackJsonSerializer()},  // TODO: DateTime format?
-                {"ServiceStackType", new ServiceStackTypeSerializer()},  // TODO: DateTime format?
-                {"XmlSerializer",new XmlSerializer(typeof (Person))},
+                {"Net Transform", (new NetTransformer()).Transform},
+                {"Net Enrich", (new NetTransformer()).Enrich},
+  
            };
 
-            Tester.Tests(repetitions, serializers);
+            Tester.Tests(repetitions, numberOfPoliceRecords, serializers);
         }
     }
 }
