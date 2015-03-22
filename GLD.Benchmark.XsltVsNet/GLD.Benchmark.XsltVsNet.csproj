@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="ITransformer.cs" />
     <Compile Include="Employee.cs" />
+    <Compile Include="Report.cs" />
     <Compile Include="XsltTransformer.cs" />
     <Compile Include="NetTransformer.cs" />
     <Compile Include="Person.cs" />
@@ -54,6 +55,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="XmlSchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="PersonToEmployee.xsl" />
+    <Content Include="PersonToPerson.xsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
