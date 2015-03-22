@@ -113,14 +113,22 @@ namespace GLD.Benchmark.XsltVsNet
             return ((double) totalTime)/(count - discardCount);
         }
 
-        //public static int AverageSize(long[] measurements)
-        //{
-        //    if (measurements == null || measurements.Length == 0) return 0;
-        //    long totalSizes = 0;
-        //    for (int i = 0; i < measurements.Length; i++)
-        //        totalSizes += measurements[i].Size;
-
-        //    return (int)(totalSizes / measurements.Length);
-        //}
+        
+        public static void Sizes(long originalSize, Dictionary<string, long[]> processedSizes)
+        {
+            var sb = new StringBuilder();
+            sb.Append("Result Xml document sizes:");
+            foreach (var m in processedSizes)
+            {
+                sb.Append("\n\t" + m.Key + ":\n\t\t");
+                for (int i = 0; i < m.Value.Length; )
+                {
+                    sb.Append(String.Format("{0,11:N0} ", m.Value[i++]));
+                    if (i % 10 == 0) sb.Append("\n\t\t");
+                }
+            }
+            Trace.WriteLine("Original Xml document size: " + originalSize);
+            Trace.WriteLine(sb.ToString());
+        }
     }
 }

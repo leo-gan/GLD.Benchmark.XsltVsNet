@@ -5,28 +5,22 @@ using System.Linq;
 
 namespace GLD.Benchmark.XsltVsNet
 {
-    //internal struct Measurements
-    //{
-    //    public string OperationName;
-    //    public long[] Times;
-
-    //    public Measurements(string operationName, int repetitions)
-    //    {
-    //        OperationName = operationName;
-    //        Times = new long[repetitions];
-    //    }
-    //}
-
+   
     internal class Tester
     {
         public static void Tests(int repetitions, int numberOfPoliceRecords,
                                  Dictionary<string, Func<string, string>> operations)
         {
+            var processedSizes = new Dictionary<string, long[]>();
             var measurements = new Dictionary<string, long[]>();
             foreach (var operation in operations)
+            {
+                processedSizes[operation.Key] = new long[repetitions];
                 measurements[operation.Key] = new long[repetitions];
-            string original = (new Person(numberOfPoliceRecords)).GetXmlString();
+            }
                 // the same data for all operations
+            string original = (new Person(numberOfPoliceRecords)).GetXmlString();
+            var originalSize = original.Length;
             for (int i = 0; i < repetitions; i++)
                 foreach (var keyValuePair in operations)
                 {
@@ -36,9 +30,11 @@ namespace GLD.Benchmark.XsltVsNet
 
                     sw.Stop();
                     measurements[keyValuePair.Key][i] = sw.ElapsedTicks;
+                    processedSizes[keyValuePair.Key][i] = processed.Length;
                     if (i != 0) continue; // trace the first result Xml-s
                     Trace.WriteLine(keyValuePair.Key + ": " + processed);
                 }
+            Report.Sizes(originalSize, processedSizes);
             Report.AllResults(measurements);
         }
 
