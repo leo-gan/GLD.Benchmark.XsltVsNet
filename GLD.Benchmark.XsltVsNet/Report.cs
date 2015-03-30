@@ -30,7 +30,7 @@ namespace GLD.Benchmark.XsltVsNet
 
         private static void SingleResult(KeyValuePair<string, long[]> oneTestMeasurements)
         {
-            string report = String.Format("{0, -20}  {1,9:N0} {2,11:N0}",
+            string report = String.Format("{0, -20}  {1,12:N0} {2,12:N0}",
                 oneTestMeasurements.Key,
                 AverageTime(oneTestMeasurements.Value), MaxTime(oneTestMeasurements.Value));
                 // , AverageSize(oneTestMeasurements.Value));
@@ -41,8 +41,8 @@ namespace GLD.Benchmark.XsltVsNet
 
         private static void ResultHeader()
         {
-            const string header = "Serializer:          Time: Avg,    Max ticks   \n"
-                                  + "===============================================";
+            const string header = "Serializer:           Time: Avg,     Max ticks   \n"
+                                  + "=================================================";
 
             Console.WriteLine(header);
             Trace.WriteLine(header);
@@ -57,7 +57,7 @@ namespace GLD.Benchmark.XsltVsNet
                 sb.Append("\n\t" + m.Key + ":\n\t\t");
                 for (int i = 0; i < m.Value.Length; )
                 {
-                    sb.Append(String.Format("{0,11:N0} ", m.Value[i++]));
+                    sb.Append(String.Format("{0,12:N0} ", m.Value[i++]));
                     if (i % 10 == 0) sb.Append("\n\t\t");
                 }
             }
@@ -66,8 +66,6 @@ namespace GLD.Benchmark.XsltVsNet
 
         private static void Errors(List<string> errors)
         {
-            // Calculate the total times discarding
-            // the 5% min and 5% max test times
             if (errors.Count <= 1) return;
             foreach (string error in errors)
             {
@@ -98,6 +96,8 @@ namespace GLD.Benchmark.XsltVsNet
 
         public static double AverageTime(long[] measurements)
         {
+            // Calculate the total times discarding
+            // the 5% min and 5% max test times
             if (measurements == null || measurements.Length == 0) return 0;
             var times = PrepareTimes(measurements);
 

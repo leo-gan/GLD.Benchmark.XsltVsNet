@@ -32,7 +32,7 @@ namespace GLD.Benchmark.XsltVsNet
                     measurements[keyValuePair.Key][i] = sw.ElapsedTicks;
                     processedSizes[keyValuePair.Key][i] = processed.Length;
                     if (i != 0) continue; // trace the first result Xml-s
-                    Trace.WriteLine(keyValuePair.Key + ": " + processed);
+                    //Trace.WriteLine(keyValuePair.Key + ": " + processed);
                 }
             Report.Sizes(originalSize, processedSizes);
             Report.AllResults(measurements);
