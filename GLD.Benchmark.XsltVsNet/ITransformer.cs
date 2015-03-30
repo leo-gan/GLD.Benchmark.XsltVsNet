@@ -8,7 +8,7 @@ namespace GLD.Benchmark.XsltVsNet
 {
     interface ITransformer
     {
-        string Transform(string sourceXml);
-        string Enrich(string sourceXml);
+        string Transform(string serialized, bool tryJson);
+        string Enrich(string sourceXml, bool tryJson);
     }
 }

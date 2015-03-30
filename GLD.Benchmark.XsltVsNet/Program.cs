@@ -14,15 +14,29 @@ namespace GLD.Benchmark.XsltVsNet
             int numberOfPoliceRecords = int.Parse(args[1]);
             Console.WriteLine("Repetitions: " + repetitions);
             Console.WriteLine("Number of Police Records: " + numberOfPoliceRecords);
-            var serializers = new Dictionary<string, Func<string, string>>
+            var transformations = new Dictionary<string, TransformAndSerialize>
             {
-                {"Net Transform", (new NetTransformer()).Transform},
-                {"Net Enrich", (new NetTransformer()).Enrich},
-                {"Xlst Transform", (new XsltTransformer()).Transform},
-                {"Xslt Enrich", (new XsltTransformer()).Enrich},
+                {"Net Transform", new TransformAndSerialize((new NetTransformer()).Transform, false)},
+                {"Net Enrich", new TransformAndSerialize((new NetTransformer()).Enrich, false)},
+                {"Net Transform (Json)", new TransformAndSerialize((new NetTransformer()).Transform, true)},
+                {"Net Enrich (Json)", new TransformAndSerialize((new NetTransformer()).Enrich, true)},
+                {"Xlst Transform", new TransformAndSerialize((new XsltTransformer()).Transform, false)},
+                {"Xslt Enrich", new TransformAndSerialize((new XsltTransformer()).Enrich, false)},
             };
 
-            Tester.Tests(repetitions, numberOfPoliceRecords, serializers);
+            Tester.Tests(repetitions, numberOfPoliceRecords, transformations);
+        }
+    }
+
+    internal class TransformAndSerialize
+    {
+        public Func<string, bool, string> Transfromer { get; set; }
+       public bool TryJson { get; set; }
+
+       public TransformAndSerialize(Func<string, bool, string> transfromer, bool tryJson)
+        {
+            Transfromer = transfromer;
+            TryJson = tryJson;
         }
     }
 }

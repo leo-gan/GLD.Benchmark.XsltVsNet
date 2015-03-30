@@ -1,48 +1,36 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Xml.Serialization;
+using NetSerializer;
 
 namespace GLD.Benchmark.XsltVsNet
 {
     internal class NetTransformer : ITransformer
     {
-        private readonly XmlSerializer _personSerializer = new XmlSerializer(typeof(Person));
-        private readonly XmlSerializer _employeeSerializer = new XmlSerializer(typeof(Employee));
+        private readonly XmlSerializer _xmlSerializerPerson = new XmlSerializer(typeof(Person));
+        private readonly XmlSerializer _xmlSerializerEmployee = new XmlSerializer(typeof(Employee));
+        private readonly Serializer _jsonSerializer = new Serializer(new Type[] { typeof(Person), typeof(Employee), typeof(Gender), typeof(Passport), typeof(PoliceRecord), typeof(HistoryRecord) });
 
         #region ITransformer Members
 
-        public string Transform(string sourceXml)
+        public string Transform(string serialized, bool tryJson)
         {
-            Person person;
-            using (var sr = new StringReader(sourceXml))
-            {
-                person = (Person) _personSerializer.Deserialize(sr);
-            }
+            Person person = tryJson ? JsonDeserialize<Person>(serialized) : XmlDeserializePerson(serialized);
 
             Employee employee = MapPersonToEmploee(person);
 
-            using (var sw = new StringWriter())
-            {
-                _employeeSerializer.Serialize(sw, employee);
-                return sw.ToString();
-            }
+            return tryJson ? JsonSerialize<Employee>(employee) : XmlSerializeEmployee(employee);
         }
 
-        public string Enrich(string sourceXml)
+        public string Enrich(string serialized, bool tryJson)
         {
-            Person person;
-            using (var sr = new StringReader(sourceXml))
-            {
-                person = (Person) _personSerializer.Deserialize(sr);
-            }
+            Person person = tryJson ? JsonDeserialize<Person>(serialized) : XmlDeserializePerson(serialized);
 
             person = EnrichPerson(person);
 
-            using (var sw = new StringWriter())
-            {
-                _personSerializer.Serialize(sw, person);
-                return sw.ToString();
-            }
+            return tryJson ? JsonSerialize<Person>(person) : XmlSerializePerson(person);
+
         }
 
         #endregion
@@ -91,6 +79,63 @@ namespace GLD.Benchmark.XsltVsNet
                 ;
             }
             return person;
+        }
+
+        public string JsonSerialize<T>(object person)
+        {
+            using (var ms = new MemoryStream())
+            {
+                _jsonSerializer.Serialize(ms, (T)person);
+                ms.Flush();
+                ms.Position = 0;
+                 return Convert.ToBase64String(ms.ToArray());
+                //var buffer = ms.ToArray();
+                //return Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+            }
+        }
+
+        public T JsonDeserialize<T>(string serialized)
+        {
+            var b = Convert.FromBase64String(serialized);
+            //var b = Encoding.UTF8.GetBytes(serialized);
+            using (var stream = new MemoryStream(b))
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                return (T)_jsonSerializer.Deserialize(stream);
+            }
+        }
+
+        public string XmlSerializePerson(Person myObject)
+        {
+            using (var sw = new StringWriter())
+            {
+                _xmlSerializerPerson.Serialize(sw, myObject);
+                return sw.ToString();
+            }
+        }
+
+        public Person XmlDeserializePerson(string serialized)
+        {
+            using (var sr = new StringReader(serialized))
+            {
+                return (Person)_xmlSerializerPerson.Deserialize(sr);
+            }
+        }
+        public string XmlSerializeEmployee(Employee myObject)
+        {
+            using (var sw = new StringWriter())
+            {
+                _xmlSerializerEmployee.Serialize(sw, myObject);
+                return sw.ToString();
+            }
+        }
+
+        public Employee XmlDeserializeEmployee(string serialized)
+        {
+            using (var sr = new StringReader(serialized))
+            {
+                return (Employee)_xmlSerializerEmployee.Deserialize(sr);
+            }
         }
     }
 }

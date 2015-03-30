@@ -17,13 +17,13 @@ namespace GLD.Benchmark.XsltVsNet
         {
              _xslt = new XslCompiledTransform();
         }
-        public string Transform(string sourceXml)
+        public string Transform(string serialized, bool tryJson)
         {
             _xslt.Load(@"..\..\PersonToEmployee.xsl");
-            return TransformProtocol(sourceXml);
+            return TransformProtocol(serialized);
         }
 
-        public string Enrich(string sourceXml)
+        public string Enrich(string sourceXml, bool tryJson)
         {
             _xslt.Load(@"..\..\PersonToPerson.xsl");
             return TransformProtocol(sourceXml);

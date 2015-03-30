@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using NetSerializer;
 
 namespace GLD.Benchmark.XsltVsNet
 {
@@ -116,12 +117,26 @@ namespace GLD.Benchmark.XsltVsNet
 
         public string GetXmlString()
         {
-            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(Person));
-            using (var sw = new StringWriter())
-            {
-                serializer.Serialize(sw, (Person)this);
-                return sw.ToString();
-            }
+            return (new NetTransformer()).XmlSerializePerson(this);
+            //var serializer = new System.Xml.Serialization.XmlSerializer(typeof(Person));
+            //using (var sw = new StringWriter())
+            //{
+            //    serializer.Serialize(sw, (Person)this);
+            //    return sw.ToString();
+            //}
+        }
+
+        public string GetJson()
+        {
+            return (new NetTransformer()).JsonSerialize<Person>(this);
+            //var serializer = new Serializer(new Type[] { typeof(Person) });
+            //using (var ms = new MemoryStream())
+            //{
+            //    serializer.Serialize(ms, (Person)this);
+            //    ms.Flush();
+            //    ms.Position = 0;
+            //    return Convert.ToBase64String(ms.ToArray());
+            //}
         }
     }
 }
