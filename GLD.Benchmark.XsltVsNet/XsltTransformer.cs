@@ -12,31 +12,33 @@ namespace GLD.Benchmark.XsltVsNet
 {
     class XsltTransformer : ITransformer
     {
-        readonly XslCompiledTransform _xslt ;
+        readonly XslCompiledTransform _xsltTransform;
+        readonly XslCompiledTransform _xsltEnrich;
         public XsltTransformer()
         {
-             _xslt = new XslCompiledTransform();
-        }
+            _xsltTransform = new XslCompiledTransform();
+            _xsltTransform.Load(@"..\..\PersonToEmployee.xsl");
+            _xsltEnrich = new XslCompiledTransform();
+            _xsltEnrich.Load(@"..\..\PersonToPerson.xsl");
+       }
         public string Transform(string serialized, bool tryJson)
         {
-            _xslt.Load(@"..\..\PersonToEmployee.xsl");
-            return TransformProtocol(serialized);
+            return TransformProtocol(_xsltTransform, serialized);
         }
 
         public string Enrich(string sourceXml, bool tryJson)
         {
-            _xslt.Load(@"..\..\PersonToPerson.xsl");
-            return TransformProtocol(sourceXml);
+            return TransformProtocol(_xsltEnrich, sourceXml);
         }
 
-        private string TransformProtocol(string sourceXml)
+        private static string TransformProtocol(XslCompiledTransform xslCompiledTransform, string sourceXml)
         {
             var myXPathDoc = new XPathDocument(new StringReader(sourceXml));
             var sb = new StringBuilder();
             using (var s = new MemoryStream())
             using (var myWriter = new StringWriter(sb))
             {
-                _xslt.Transform(myXPathDoc, null, myWriter);
+                xslCompiledTransform.Transform(myXPathDoc, null, myWriter);
                 myWriter.Flush();
                 return sb.ToString();
             }
