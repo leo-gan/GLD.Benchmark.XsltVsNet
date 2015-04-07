@@ -56,7 +56,7 @@ To measure the **average time** the 5% of maximum and 5% of minimum values are r
 
 I also measure the **size** of the transformed Xml document. It shows the importance of the spaces and new line symbols for the document size.
 
-## Note about Result Xml document ##
+## Note about result Xml document: ##
 
 The sizes of the result Xml documents for Xslt and Object transformations should not be very different. Yes, you read me right. The result Xml documents should not be the same in each symbol for both transformations, and still documents can be recognized as equal. It is because of the ambiguity of the Xml standard. For example, the namespace prefixes could be different for the same namespace. In one result we can get “ns0:” prefix and the “abc12:” prefix in another, but both resolve the same namespace. As result the Xml documents got different size, but both are equal in terms of data values and structure. As result of this, we could not compare the Xml documents as the strings. We could converted Xml documents to the objects graph and compared the result object set. If all objects are equal, Xml documents are equal. I decided do not compare results because it is not the test goal. I just output the target Xml documents, so they could be easily compared, if needed.
 
