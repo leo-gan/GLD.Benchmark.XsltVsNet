@@ -18,12 +18,13 @@ namespace GLD.Benchmark.XsltVsNet
                 processedSizes[operation.Key] = new long[repetitions];
                 measurements[operation.Key] = new long[repetitions];
             }
-                // the same data for all transformations
 
+            // the same data for all transformations:
             var testPerson = new Person(numberOfPoliceRecords);
             string originalXml = testPerson.GetXmlString();
             string originalJson = testPerson.GetJson();
             int originalSize = 0;
+
             for (int i = 0; i < repetitions; i++)
                 foreach (var keyValuePair in transformations)
                 {
@@ -36,6 +37,11 @@ namespace GLD.Benchmark.XsltVsNet
                     sw.Stop();
                     measurements[keyValuePair.Key][i] = sw.ElapsedTicks;
                     processedSizes[keyValuePair.Key][i] = processed.Length;
+
+                    GC.Collect(); 
+                    GC.WaitForFullGCComplete();
+                    GC.Collect();
+
                     if (i != 0) continue; // trace the first result Xml-s
                     // Trace.WriteLine(keyValuePair.Key + ": " + processed); // Do not use it for big Xml !
                 }
