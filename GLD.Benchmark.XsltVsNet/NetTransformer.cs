@@ -40,14 +40,14 @@ namespace GLD.Benchmark.XsltVsNet
             var employee = new Employee
             {
                 Age = person.Age + 1,
-                FirstName = "T " + person.FirstName,
+                FirstName = person.FirstName,
                 Gender = person.Gender,
-                LastName = "T " + person.LastName,
+                LastName = person.LastName,
                 Passport = new Passport
                 {
-                    Authority = "T " + person.Passport.Authority,
+                    Authority = person.Passport.Authority,
                     ExpirationDate = person.Passport.ExpirationDate + TimeSpan.FromDays(365),
-                    Number = "T " + person.Passport.Number,
+                    Number = person.Passport.Number,
                 },
                 HistoryRecords = new HistoryRecord[person.PoliceRecords.Length]
             };
@@ -55,7 +55,7 @@ namespace GLD.Benchmark.XsltVsNet
                 employee.HistoryRecords[i] = new HistoryRecord
                 {
                     Id = person.PoliceRecords[i].Id + 1,
-                    CrimeCode = "T " + person.PoliceRecords[i].CrimeCode,
+                    CrimeCode = person.PoliceRecords[i].CrimeCode,
                 };
             return employee;
         }
@@ -63,19 +63,19 @@ namespace GLD.Benchmark.XsltVsNet
         private static Person EnrichPerson(Person person)
         {
             person.Age = person.Age + 10;
-            person.FirstName = "E " + person.FirstName;
-            person.LastName = "E " + person.LastName;
+            person.FirstName = person.FirstName;
+            person.LastName = person.LastName;
 
-            person.Passport.Authority = "E " + person.Passport.Authority;
+            person.Passport.Authority = person.Passport.Authority;
             person.Passport.ExpirationDate = person.Passport.ExpirationDate +
                                              TimeSpan.FromDays(3650);
-            person.Passport.Number = "E " + person.Passport.Number;
+            person.Passport.Number = person.Passport.Number;
 
             foreach (PoliceRecord t in person.PoliceRecords)
             {
                 t.Id = t.Id + 10;
-                t.CrimeCode = "E " + t.CrimeCode;
-                t.Description = "E " + t.Description;
+                t.CrimeCode = t.CrimeCode;
+                t.Description = t.Description;
                 ;
             }
             return person;
