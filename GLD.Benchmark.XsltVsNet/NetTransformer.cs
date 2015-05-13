@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 using NetSerializer;
 
@@ -11,6 +12,12 @@ namespace GLD.Benchmark.XsltVsNet
         private readonly XmlSerializer _xmlSerializerPerson = new XmlSerializer(typeof(Person));
         private readonly XmlSerializer _xmlSerializerEmployee = new XmlSerializer(typeof(Employee));
         private readonly Serializer _jsonSerializer = new Serializer(new Type[] { typeof(Person), typeof(Employee), typeof(Gender), typeof(Passport), typeof(PoliceRecord), typeof(HistoryRecord) });
+
+        private XmlWriterSettings _xmlWriterSettings = new XmlWriterSettings()
+        {
+            Indent = false,
+            NewLineHandling = NewLineHandling.None
+        };
 
         #region ITransformer Members
 
@@ -107,12 +114,13 @@ namespace GLD.Benchmark.XsltVsNet
 
         public string XmlSerializePerson(Person myObject)
         {
-            using (var sw = new StringWriter())
+            var sb = new StringBuilder();
+            using (var sw = XmlWriter.Create(sb, _xmlWriterSettings))
             {
                 _xmlSerializerPerson.Serialize(sw, myObject);
-                return sw.ToString();
             }
-        }
+            return sb.ToString();
+       }
 
         public Person XmlDeserializePerson(string serialized)
         {
@@ -123,12 +131,13 @@ namespace GLD.Benchmark.XsltVsNet
         }
         public string XmlSerializeEmployee(Employee myObject)
         {
-            using (var sw = new StringWriter())
+            var sb = new StringBuilder();
+            using (var sw = XmlWriter.Create(sb, _xmlWriterSettings))
             {
                 _xmlSerializerEmployee.Serialize(sw, myObject);
-                return sw.ToString();
             }
-        }
+            return sb.ToString();
+         }
 
         public Employee XmlDeserializeEmployee(string serialized)
         {

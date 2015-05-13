@@ -43,7 +43,7 @@ namespace GLD.Benchmark.XsltVsNet
                     GC.Collect();
 
                     if (i != 0) continue; // trace the first result Xml-s
-                    // Trace.WriteLine(keyValuePair.Key + ": " + processed); // Do not use it for big Xml !
+                    Trace.WriteLine(keyValuePair.Key + ": " + processed); // Do not use it for big Xml !
                 }
             Report.Sizes(originalSize, processedSizes);
             Report.AllResults(measurements);

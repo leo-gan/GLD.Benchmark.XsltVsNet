@@ -16,11 +16,11 @@ namespace GLD.Benchmark.XsltVsNet
             Console.WriteLine("Number of Police Records: " + numberOfPoliceRecords);
             var transformations = new Dictionary<string, TransformAndSerialize>
             {
-                {"Net Transform", new TransformAndSerialize((new NetTransformer()).Transform, false)},
-                {"Net Enrich", new TransformAndSerialize((new NetTransformer()).Enrich, false)},
                 {"Net Transform (Json)", new TransformAndSerialize((new NetTransformer()).Transform, true)},
-                {"Net Enrich (Json)", new TransformAndSerialize((new NetTransformer()).Enrich, true)},
+                {"Net Transform", new TransformAndSerialize((new NetTransformer()).Transform, false)},
                 {"Xlst Transform", new TransformAndSerialize((new XsltTransformer()).Transform, false)},
+                {"Net Enrich (Json)", new TransformAndSerialize((new NetTransformer()).Enrich, true)},
+                {"Net Enrich", new TransformAndSerialize((new NetTransformer()).Enrich, false)},
                 {"Xslt Enrich", new TransformAndSerialize((new XsltTransformer()).Enrich, false)},
             };
 
